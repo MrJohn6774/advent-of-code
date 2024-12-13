@@ -1,5 +1,4 @@
 from collections import deque
-from itertools import cycle
 import time
 from aocd import get_data, submit
 import numpy as np
@@ -15,14 +14,16 @@ else:
 
 s_pos = [(x, y) for y, line in enumerate(grid) for x, ch in enumerate(line) if ch == '^'][0]
 pos = s_pos
-directions = cycle([(0, -1), (1, 0), (0, 1), (-1, 0)])
-dx, dy = next(directions)
+directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+dir_idx = 0
+dx, dy = directions[dir_idx]
 x, y = pos
 visited = deque([pos])
 
 while 0 <= x < len(grid[0]) and 0 <= y < len(grid):
     while grid[y][x] == '#':
-        dx, dy = next(directions)
+        dir_idx = (dir_idx + 1) % 4
+        dx, dy = directions[dir_idx]
         x, y = pos[0] + dx, pos[1] + dy
         if not (0 <= x < len(grid[0]) and 0 <= y < len(grid)):
             break
@@ -45,8 +46,8 @@ grid_test = grid.copy()
 while visited:
     pos = s_pos
     x, y = pos
-    directions = cycle([(0, -1), (1, 0), (0, 1), (-1, 0)])
-    dx, dy = next(directions)
+    dir_idx = 0
+    dx, dy = directions[0]
     visited_dir = set()
 
     # insert obstacle in path
@@ -56,15 +57,16 @@ while visited:
     # run simulation
     while 0 <= x < len(grid_test[0]) and 0 <= y < len(grid_test):
         while grid_test[y][x] == '#':
-            dx, dy = next(directions)
+            dir_idx = (dir_idx + 1) % 4
+            dx, dy = directions[dir_idx]
             x, y = pos[0] + dx, pos[1] + dy
             if not (0 <= x < len(grid_test[0]) and 0 <= y < len(grid_test)):
                 break
         pos = (x, y)
 
         # loop detection
-        if (pos, (dx, dy)) not in visited_dir:
-            visited_dir.add((pos, (dx, dy)))
+        if (pos, dir_idx) not in visited_dir:
+            visited_dir.add((pos, dir_idx))
         else:
             ans_b += 1
             break
