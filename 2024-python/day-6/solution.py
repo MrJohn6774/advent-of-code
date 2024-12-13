@@ -18,7 +18,7 @@ directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]
 dir_idx = 0
 dx, dy = directions[dir_idx]
 x, y = pos
-visited = deque([pos])
+visited = {pos: dir_idx}
 
 while 0 <= x < len(grid[0]) and 0 <= y < len(grid):
     while grid[y][x] == '#':
@@ -29,8 +29,8 @@ while 0 <= x < len(grid[0]) and 0 <= y < len(grid):
             break
     pos = (x, y)
 
-    if pos not in visited:
-        visited.append(pos)
+    if pos not in visited.keys():
+        visited[pos] = dir_idx
 
     x, y = pos[0] + dx, pos[1] + dy
 
@@ -39,28 +39,28 @@ print('Part 1: ', ans_a)
 
 
 start_time = time.time()
+visited = deque(visited.items())
 ans_b = 0
-visited.popleft()
-grid_test = grid.copy()
+s_pos, _ = visited.pop()
 
 while visited:
-    pos = s_pos
-    x, y = pos
-    dir_idx = 0
-    dx, dy = directions[0]
+    # insert obstacle in path
+    (test_x, test_y) = s_pos
+    grid[test_y][test_x] = '#'
     visited_dir = set()
 
-    # insert obstacle in path
-    test_x, test_y = visited.pop()
-    grid_test[test_y][test_x] = '#'
+    s_pos, dir_idx = visited.pop()
+    pos = s_pos
+    x, y = pos
+    dx, dy = directions[dir_idx]
 
     # run simulation
-    while 0 <= x < len(grid_test[0]) and 0 <= y < len(grid_test):
-        while grid_test[y][x] == '#':
+    while 0 <= x < len(grid[0]) and 0 <= y < len(grid):
+        while grid[y][x] == '#':
             dir_idx = (dir_idx + 1) % 4
             dx, dy = directions[dir_idx]
             x, y = pos[0] + dx, pos[1] + dy
-            if not (0 <= x < len(grid_test[0]) and 0 <= y < len(grid_test)):
+            if not (0 <= x < len(grid[0]) and 0 <= y < len(grid)):
                 break
         pos = (x, y)
 
@@ -74,7 +74,7 @@ while visited:
         x, y = pos[0] + dx, pos[1] + dy
     
     # remove obstacle
-    grid_test[test_y][test_x] = '.'
+    grid[test_y][test_x] = '.'
 
 end_time = time.time()
 print('Part 2: ', ans_b)
