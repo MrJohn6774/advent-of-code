@@ -41,14 +41,14 @@ def create_folders_and_files(year=None, day=None):
         with open(solution_file, "w") as f:
             f.write("""from aocd import get_data, submit
 
-use_example = False
+use_example = True
 submit_ans = False and not use_example
 
 if use_example:
     with open('example.txt') as f:
-        inputs = f.read().splitlines()
+        data = f.read().splitlines()
 else:
-    inputs = get_data(year={}, day={}).splitlines()
+    data = get_data(year={}, day={}).splitlines()
 
 
 
